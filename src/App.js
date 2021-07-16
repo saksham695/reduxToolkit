@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import "./App.css";
-import { addTodo, removeTodo } from "./store/reduces/todoReduces";
+// import { getTodoData, removeTodo } from "./store/reduces/todoReduces";
+import { addTodo, fetchTodoData, removeTodo } from "./store/slices/todoSlice";
+
 export default function App() {
   const [todoItem, setTodo] = useState("");
 
   const state = useSelector((state) => state);
-  const { todoStore } = state;
-  const { todoItems } = todoStore;
+  console.log(state);
+  const { todoStore, todoSlice } = state;
+  // const { todoItems } = todoStore;
   const dispatch = useDispatch();
 
   const onTodoChanged = (e) => {
@@ -16,13 +19,13 @@ export default function App() {
   };
 
   const onAddTodoItem = () => {
-    dispatch({
-      type: addTodo.toString(),
-      payload: todoItem,
-    });
+    dispatch(addTodo(todoItem));
     setTodo("");
   };
 
+  React.useEffect(() => {
+    dispatch(fetchTodoData());
+  }, []);
   return (
     <div>
       <div className="list-header">
@@ -32,7 +35,7 @@ export default function App() {
       <button type="submit" onClick={onAddTodoItem}>
         ADD
       </button>
-      {todoItems.map((item, index) => {
+      {[...todoSlice.todoItems].map((item, index) => {
         return <TodoItem item={item} index={index} key={`${index}`} />;
       })}
     </div>
@@ -43,10 +46,11 @@ const TodoItem = React.memo(({ item, index }) => {
   const dispatch = useDispatch();
 
   const onItemClicked = (index) => {
-    dispatch({
-      type: removeTodo.toString(),
-      payload: index,
-    });
+    // dispatch({
+    //   type: removeTodo.toString(),
+    //   payload: index,
+    // });
+    dispatch(removeTodo(index));
   };
 
   var r = Math.floor(Math.random() * (255 - 0 + 1) + 0);
